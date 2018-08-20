@@ -2,7 +2,11 @@ import time as time
 from tkinter import *
 from tkinter import messagebox
 import socket
+from tkinter.filedialog import askopenfilename
+
+
 import _thread
+import os
 List= []
 att = {}
 AttList=[]
@@ -27,14 +31,15 @@ def check():
     global tk,check
     usercheck= user.get()
     passwordcheck= password.get()
-
-    if usercheck == 'admin' and passwordcheck == 'admin':
+    foo = usercheck + ':' + passwordcheck
+    fo = open("Credentials.txt", "r")
+    cred = fo.read()
+    cred = cred.split("\n")
+    if foo in cred:
         messagebox.showinfo('Login', 'Success!')
         tk.destroy()
         check = True
         startnetwork()
-
-
     else:
         messagebox.showinfo('', 'Username or Password is Incorrect')
 
@@ -47,12 +52,22 @@ def main():
         main = Tk()
         entry= Text(main,bd=10)
         but = Button(main,bd=5,text='SEND',command=send)
+        choosefilebut= Button(main,bd=2,text="Choose File",command=choosefile)
+        choosefilebut.place(relx=0.75,rely=0.3)
         but.place(height=300,width=300,relx=0.7,rely=0.5)
         entry.place(height=400,width=400,relx=0.4,rely=0.5)
+
         main.mainloop()
 
     else:
         messagebox.showinfo('', 'Please login first')
+
+def choosefile():
+
+
+    filename= askopenfilename()
+    print(filename)
+
 def startnetwork():
     global sock,host,port,client,addr
     sock= socket.socket()
