@@ -3,16 +3,16 @@ from tkinter import *
 from tkinter import messagebox
 import socket
 from tkinter.filedialog import askopenfilename
-
-
 import _thread
 import os
+from os.path import splitext
 List= []
 att = {}
 AttList=[]
 tk = Tk()
 check = False
 click = False
+fileselected = False
 def login():
     global user,password
     user = Entry(tk,bd = 5)
@@ -63,10 +63,20 @@ def main():
         messagebox.showinfo('', 'Please login first')
 
 def choosefile():
-
-
+# TODO implement file sharing
+    global fileobj,fileselected,extension,size
     filename= askopenfilename()
-    print(filename)
+    filename,extension=splitext(filename)
+    size= os.path.getsize(filename + extension)
+    size= str(size)
+    print(size)
+    if extension==".JPG":
+        fileobj = open(filename + extension, "rb")
+        fileselected = True
+
+    else:
+        fileobj=open(filename + extension,"r")
+        fileselected= True
 
 def startnetwork():
     global sock,host,port,client,addr
@@ -77,9 +87,17 @@ def startnetwork():
     sock.listen(5)
     main()
 def send():
-    global client
-
+    global client,fileselected
     try:
+        if fileselected == True:
+            client.send("FINCOMING".encode())
+            client.send(extension.encode())
+            if extension == ".JPG":
+                client.send(fileobj.read())
+            else:
+                client.send(fileobj.read(1024).encode())
+                fileselected=False
+
         msg = entry.get("1.0", END)
         client.send(msg.encode())
 
