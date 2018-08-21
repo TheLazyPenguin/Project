@@ -5,41 +5,34 @@ s = socket.socket()
 host = socket.gethostname()
 port = 12345
 s.connect((host, port))
+rec = b''
 while True:
     k = s.recv(1024).decode()
     if k != '':
         if k == "FINCOMING":
             ext = s.recv(1024).decode()
-            print(ext)
-            if ext == ".JPG":
-                del k
+            size = s.recv(1024).decode("utf-16")
+            filename = s.recv(1024).decode()
+            if ext == ".JPG" or ext == ".png" or ext==".jpg":
                 while True:
-                    try:
-                        print(".")
-                        k = s.recv(5396847)
-                        kch = k
-                        kch += kch
-                        if k == "FIN":
-                            print("yes")
-                            obj= open("YeEt"+ext,"wb")
-                            obj.write(kch)
-                            obj.close()
-                            break
-                    except UnicodeDecodeError:
-                        pass
-                    except ConnectionResetError:
-                        print("yes")
-                        obj= open("YeEt"+ext,"wb")
-                        obj.write(kch)
+                    print(".")
+                    k = s.recv(int(size))
+                    if k != b'FIN':
+                        rec += k
+                    if k == b'FIN':
+                        print("FINISHED")
+                        obj= open(filename,"wb")
+                        obj.write(rec)
                         obj.close()
                         break
                     
                 
             else:
-                obj= open("YeEt"+ext,"w")
-                obj.write(k)
+                rec = s.recv(1024).decode()
+                obj= open(filename,"w")
+                obj.write(rec)
                 obj.close()
-                print("finished")
+                print("FINISHED")
         else:
             print(k)
         

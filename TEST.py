@@ -64,13 +64,16 @@ def main():
 
 def choosefile():
 # TODO implement file sharing
-    global fileobj,fileselected,extension,size
+    global fileobj,fileselected,extension,size,filenom
     filename= askopenfilename()
     filename,extension=splitext(filename)
     size= os.path.getsize(filename + extension)
     size= str(size)
+    filenom = os.path.basename(filename + extension)
+    print(filenom)
+    print(extension)
     print(size)
-    if extension==".JPG":
+    if extension==".JPG" or extension == ".png" or extension == ".jpg":
         fileobj = open(filename + extension, "rb")
         fileselected = True
 
@@ -92,8 +95,14 @@ def send():
         if fileselected == True:
             client.send("FINCOMING".encode())
             client.send(extension.encode())
-            if extension == ".JPG":
+            time.sleep(0.5)
+            client.send(size.encode("utf-16"))
+            client.send(filenom.encode())
+            if extension == ".JPG" or extension == ".png" or extension == ".jpgs":
                 client.send(fileobj.read())
+                time.sleep(3)
+                client.send("FIN".encode())
+                fileselected=False
             else:
                 client.send(fileobj.read(1024).encode())
                 fileselected=False
