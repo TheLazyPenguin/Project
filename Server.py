@@ -1,4 +1,5 @@
 import time as time
+import tkinter
 from tkinter import *
 from tkinter import messagebox
 import socket
@@ -6,13 +7,14 @@ from tkinter.filedialog import askopenfilename
 import _thread
 import os
 from os.path import splitext
+tk = tkinter.Tk()
 List= []
 att = {}
 AttList=[]
-tk = Tk()
 check = False
 click = False
 fileselected = False
+
 def login():
     global user,password
     user = Entry(tk,bd = 5)
@@ -49,7 +51,7 @@ def main():
     global entry,sock,host,port,client,addr
     if check == True:
         global entry,sock,host,port,client,addr
-        main = Tk()
+        main = tkinter.Tk()
         entry= Text(main,bd=10)
         but = Button(main,bd=5,text='SEND',command=send)
         choosefilebut= Button(main,bd=2,text="Choose File",command=choosefile)
@@ -98,7 +100,7 @@ def send():
             time.sleep(0.5)
             client.send(size.encode("utf-16"))
             client.send(filenom.encode())
-            if extension == ".JPG" or extension == ".png" or extension == ".jpgs":
+            if extension == ".JPG" or extension == ".png" or extension == ".jpg":
                 client.send(fileobj.read())
                 time.sleep(3)
                 client.send("FIN".encode())
@@ -107,7 +109,7 @@ def send():
                 client.send(fileobj.read(1024).encode())
                 fileselected=False
 
-        msg = entry.get("1.0", END)
+        msg = entry.get("1.0",END)
         client.send(msg.encode())
 
 
@@ -128,12 +130,15 @@ def connect():
     con = 'Connected to ' + str(host)
     client.send(con.encode())
 
-while True:
+''' while True:
     def run():
         try:
-            com=input("command?")
+            com= input("command?")
+            print(com)
             eval(com)
         except (SyntaxError,NameError):
             run()
     run()
+    '''
 
+login()
